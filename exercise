@@ -1,0 +1,17 @@
+#装饰器
+import functools
+def docment_it(func):
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        print("Running function:", func.__name__)
+        print("Positional arguments:", args)
+        print("Kewword arguments:", kwargs)
+        result = func(*args, **kwargs)
+        print("Results:", result)
+        return result
+    return decorator
+@docment_it
+def add_ints(a, b):
+    return a + b
+a = add_ints(1, 2)
+print(add_ints.__name__)
