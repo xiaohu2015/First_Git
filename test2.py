@@ -1,20 +1,44 @@
-class Tracer(object):
-    ' 装饰器：用于追踪函数调用'
-    def __init__(self, func):
-        self.calls = 0 #记录调用次数
-        self.func = func  #将函数引用给类属性
-        self.__name__ = func.__name__  #将函数保存在属性中
-    def __call__(self, *args, **kwargs):
-        self.calls += 1 #调用次数加1
-        print('call %s to %s' % (self.calls, self.func.__name__)) #调用前输出xinxi
-        result = self.func(*args, **kwargs)
-        print('end!')
-        return result
-@Tracer                #等价于spam = Tracer(spam)
-def spam(a, b, c):     #从而将spam包装到装饰器对象中
-    return a + b + c
-print(spam(1, 2, 3))      #实际上调用the Tracer wrapper object，激发__call__
-print(spam('a', 'b', 'c'))
-print(spam.__name__)
-
-
+# -*— coding:utf-8 -*-
+#生成随机验证码类
+from PIL import Image, ImageFilter, ImageFont, ImageDraw
+import random
+class CodeImage(object):
+    def __init__(self, width=240, height=60, number=4):
+        self.__width = width   #宽度
+        self.__height = height  #高度
+        self.__number = number  #字符个数
+        font = ImageFont.truetype("arial.ttf", 36)
+    #保存图像
+    def save(self, name, form):
+        self.createImage()
+        self.createDrawer()
+        self.fillPoint()
+        self.fillChar()
+        self.image.save(name, form)
+    #创建图像
+    def createImage(self):
+        self.image = Image.new("RGB", (self.__width, self.__height), (255, 255, 255))
+    #创建画笔
+    def createDrawer(self):
+        self.drawer = ImageDraw.Draw(self.image)
+    #填充像素点
+    def fillPoint(self):
+        for x in range(0,self.__width):
+            for y in range(self.__height):
+                self.drawer.point((x, y),fill=self.randColor(80))
+    #输出文字
+    def fillChar(self):
+        length = self.__width // self.__number
+        for n in range(self.__number):
+            font = ImageFont.truetype("arial.ttf", random.randint(30,40))
+            self.drawer.text((length*n + random.randint(5, 10), random.randint(10, 15)),self.randChar(), font=font, fill=self.randColor(32, 127))
+    #返回随机字符
+    def randChar(self):
+        codeStr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        return codeStr[random.randint(0,len(codeStr)-1)]
+    #返回随机颜色，用于
+    def randColor(self, low=64, hight=255):
+        return (random.randint(low, hight),random.randint(low, hight), random.randint(low, hight))
+if __name__ == "__main__":
+    codeimage = CodeImage()
+    codeimage.save("code.jpg", 'jpeg')
